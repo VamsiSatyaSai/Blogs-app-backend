@@ -1,11 +1,13 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const bodyparser = require('body-parser');
 const app = express();
 
 require('dotenv').config();
 
 app.use(cors());
+app.use(bodyparser.json())
 
 app.listen(3001);
 
@@ -51,14 +53,17 @@ app.get('/blogs/:id', (req, response) => {
     })
 })
 
-app.post('/posts', (req, res) => {
-    const { title, content } = req.body;
-    connection.query('INSERT INTO posts (title, description, author) VALUES (?, ?, ?)', [title, content], (err, results) => {
+app.post('/blogs/create', (req, res) => {
+    const { title, description } = req.body;
+    console.log(title, description);
+    const query = 'INSERT INTO blog (title, description) VALUES (?, ?)'
+    connection.query(query, [title, description], (err, results) => {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
-            return;
         }
-        res.json({ id: results.insertId });
+        console.log(results);
+        res.status(201).json({ id: results.insertId });
     });
 });
 
